@@ -1,10 +1,14 @@
-"""Conservative consensus over multiple engine results.
+"""Conservative confidence policy over engine results.
 
 Rules (per scope philosophy — prefer silence over confident guessing):
 1. If a curated lookup hit exists, short-circuit with `reference` tier.
 2. Otherwise, gather OK results (drop OUT_OF_DOMAIN / TIMEOUT / ENGINE_ERROR).
 3. Zero usable engines -> `unsupported`.
-4. One usable engine -> `medium` (or `low` if status=LOW_CONFIDENCE / wide sigma).
+4. One usable engine:
+   - `low` if the engine flagged LOW_CONFIDENCE.
+   - `high` if kNN made an artifact-configured short-circuit match.
+   - `high` if the engine reports strong native confidence and no warnings.
+   - otherwise `medium`.
 5. Multiple usable engines:
    - Compute spread (max - min).
    - If spread <= tight threshold -> uncertainty-weighted mean, tier `high`.
@@ -29,6 +33,7 @@ SPREAD_THRESHOLDS: dict[str, tuple[float, float]] = {
 
 
 _USABLE = {EngineStatus.OK, EngineStatus.LOW_CONFIDENCE}
+_HIGH_CONFIDENCE_SCORE = 0.85
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +68,32 @@ def _combined_sigma(results: list[EngineResult]) -> float | None:
     if den <= 0:
         return None
     return (1.0 / den) ** 0.5
+
+
+def _is_knn_shortcircuit(r: EngineResult) -> bool:
+    """True when the kNN adapter found an artifact-defined near-exact match."""
+    return (
+        r.engine == "knn"
+        and r.status == EngineStatus.OK
+        and r.value is not None
+        and bool((r.raw or {}).get("shortcircuit_active"))
+    )
+
+
+def _single_engine_tier(r: EngineResult) -> ConfidenceTier:
+    if r.status == EngineStatus.LOW_CONFIDENCE:
+        return ConfidenceTier.LOW
+    if _is_knn_shortcircuit(r):
+        return ConfidenceTier.HIGH
+    if (
+        r.status == EngineStatus.OK
+        and r.confidence_score is not None
+        and isfinite(r.confidence_score)
+        and r.confidence_score >= _HIGH_CONFIDENCE_SCORE
+        and not r.warnings
+    ):
+        return ConfidenceTier.HIGH
+    return ConfidenceTier.MEDIUM
 
 
 def combine(
@@ -104,7 +135,7 @@ def combine(
 
     if len(usable) == 1:
         only = usable[0]
-        tier = ConfidenceTier.LOW if only.status == EngineStatus.LOW_CONFIDENCE else ConfidenceTier.MEDIUM
+        tier = _single_engine_tier(only)
         method = Method(only.engine) if only.engine in {m.value for m in Method} else Method.CONSENSUS
         return PropertyPrediction(
             property=prop,

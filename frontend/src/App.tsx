@@ -37,8 +37,11 @@ type Status =
   | { kind: "error"; message: string }
   | { kind: "result"; data: PredictionResponse };
 
+type ActiveTab = "predict" | "how";
+
 export default function App() {
   const ketcherRef = useRef<Ketcher | null>(null);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("predict");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [smiles, setSmiles] = useState<string>("");
   const [smilesInput, setSmilesInput] = useState<string>("");
@@ -204,6 +207,26 @@ export default function App() {
           <span className="brand-name">predict</span>
           <span className="brand-badge">ALPHA</span>
         </div>
+        <nav className="site-tabs" aria-label="Primary">
+          <button
+            type="button"
+            className={`site-tab${activeTab === "predict" ? " site-tab-active" : ""}`}
+            aria-controls="predict-panel"
+            aria-selected={activeTab === "predict"}
+            onClick={() => setActiveTab("predict")}
+          >
+            Predict
+          </button>
+          <button
+            type="button"
+            className={`site-tab${activeTab === "how" ? " site-tab-active" : ""}`}
+            aria-controls="how-panel"
+            aria-selected={activeTab === "how"}
+            onClick={() => setActiveTab("how")}
+          >
+            How it works
+          </button>
+        </nav>
         <div
           className={`system-status${allVisibleReady ? "" : " system-status-warn"}`}
         >
@@ -212,7 +235,11 @@ export default function App() {
         </div>
       </header>
 
-      <main className="workbench">
+      <main
+        id="predict-panel"
+        className="workbench"
+        hidden={activeTab !== "predict"}
+      >
         <section className="molecule-pane">
           <EngineSelector
             engines={availableEngines}
@@ -283,6 +310,9 @@ export default function App() {
           {status.kind === "result" && <ResultView data={status.data} />}
         </section>
       </main>
+      <main id="how-panel" className="info-page" hidden={activeTab !== "how"}>
+        <HowItWorks />
+      </main>
     </div>
   );
 }
@@ -291,7 +321,7 @@ function EmptyState() {
   return (
     <div className="empty-state">
       <h2>Awaiting structure</h2>
-      <p>Draw a molecule, then run the selected prediction engines.</p>
+      <p>Draw a molecule, then run the selected property engine.</p>
     </div>
   );
 }
@@ -322,6 +352,197 @@ function ResultView({ data }: { data: PredictionResponse }) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function HowItWorks() {
+  return (
+    <div className="info-content">
+      <section className="how-hero">
+        <p className="eyebrow">How it works</p>
+        <h1>What happens when Properties Predict estimates a molecule</h1>
+        <p>
+          The site converts a drawn structure or SMILES string into a standardized
+          molecule, checks whether it fits the supported chemistry scope, looks
+          for measured reference data, runs the relevant local prediction engine
+          for each property, and then reports only the result the backend can
+          defend.
+        </p>
+      </section>
+
+      <section className="how-section">
+        <div className="section-heading">
+          <p className="eyebrow">Prediction pipeline</p>
+          <h2>From structure to answer</h2>
+        </div>
+        <div className="flow-grid">
+          <article className="info-card">
+            <span className="step-number">01</span>
+            <h3>Read and standardize the molecule</h3>
+            <p>
+              The editor output is read as SMILES. RDKit parses the structure,
+              canonicalizes the SMILES, calculates formula and molecular weight,
+              and creates an InChIKey so equivalent drawings resolve to the same
+              compound identity.
+            </p>
+          </article>
+          <article className="info-card">
+            <span className="step-number">02</span>
+            <h3>Apply chemistry guardrails</h3>
+            <p>
+              The backend rejects molecules outside the current model scope:
+              disconnected mixtures, radicals, molecular weight outside 10 to
+              1000 Da, and atoms outside H, B, C, N, O, F, Si, P, S, Cl, Br,
+              and I. Unsupported structures return reasons instead of guesses.
+            </p>
+          </article>
+          <article className="info-card">
+            <span className="step-number">03</span>
+            <h3>Check measured reference data</h3>
+            <p>
+              For each requested property, the InChIKey is checked against the
+              bundled lookup database. A hit is returned as a reference value
+              with its source and the prediction engine is skipped for that
+              property.
+            </p>
+          </article>
+          <article className="info-card">
+            <span className="step-number">04</span>
+            <h3>Run the property engine</h3>
+            <p>
+              Each property is handled by one active prediction route. Melting
+              point, boiling point, and density each return one engine answer
+              with that engine's quality checks, warnings, and uncertainty.
+              Engine chips in the prediction view control which routes are
+              allowed to run.
+            </p>
+          </article>
+          <article className="info-card">
+            <span className="step-number">05</span>
+            <h3>Qualify the result</h3>
+            <p>
+              The selected property engine either returns a value, returns a
+              value with lower confidence, or declines to answer. Domain checks,
+              similarity checks, uncertainty, and model warnings decide whether
+              the result is shown as high, medium, low, or unsupported.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="how-section">
+        <div className="section-heading">
+          <p className="eyebrow">Engines</p>
+          <h2>What each property engine contributes</h2>
+        </div>
+        <div className="engine-explain-grid">
+          <article className="info-card info-card-accent">
+            <h3>kNN similarity model</h3>
+            <p>
+              The kNN engine fingerprints the query molecule with Morgan
+              fingerprints and compares it to the curated training set using
+              Tanimoto similarity. If the nearest neighbor is at or above the
+              short-circuit threshold stored in the model artifact, the top
+              neighbor's measured value is used directly. Lower similarity can
+              still produce a lower-confidence estimate, while very low
+              similarity is treated as out of domain.
+            </p>
+          </article>
+          <article className="info-card info-card-accent">
+            <h3>GNN ensemble</h3>
+            <p>
+              The GNN engine represents the molecule as a graph with atom, bond,
+              global descriptor, fingerprint, and shape features. Multiple v7
+              model checkpoints vote as an ensemble. The engine reports a value,
+              uncertainty, similarity to the training set, and calibrated error
+              checks that can mark a prediction low confidence or out of domain.
+            </p>
+          </article>
+          <article className="info-card info-card-accent">
+            <h3>Thermo density model</h3>
+            <p>
+              Density is estimated offline from chemistry correlations rather
+              than a learned neural model. Joback group contributions estimate
+              critical properties, then COSTALD and Rackett liquid-density
+              equations estimate density. The result is downgraded when group
+              fragmentation is incomplete, the molecule may not be liquid at
+              25 degC, or the correlations disagree.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="how-section">
+        <div className="section-heading">
+          <p className="eyebrow">Confidence</p>
+          <h2>How to read the answer</h2>
+        </div>
+        <div className="confidence-grid">
+          <article className="confidence-row">
+            <h3>Reference</h3>
+            <p>A measured lookup value was found for that compound and property.</p>
+          </article>
+          <article className="confidence-row">
+            <h3>High</h3>
+            <p>
+              The assigned engine returned one of its strongest signals, such
+              as a kNN short-circuit match or a warning-free result with high
+              native confidence.
+            </p>
+          </article>
+          <article className="confidence-row">
+            <h3>Medium</h3>
+            <p>
+              The assigned engine returned a usable value, but the quality
+              signals are more typical than exceptional.
+            </p>
+          </article>
+          <article className="confidence-row">
+            <h3>Low</h3>
+            <p>
+              The assigned engine produced an estimate, but it flagged weak
+              similarity, higher uncertainty, or another warning. Treat it as a
+              rough estimate.
+            </p>
+          </article>
+          <article className="confidence-row">
+            <h3>Unsupported</h3>
+            <p>
+              The molecule or property is outside scope, or the assigned engine
+              could not produce a trustworthy value.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="how-section">
+        <div className="section-heading">
+          <p className="eyebrow">Scope</p>
+          <h2>What the numbers mean</h2>
+        </div>
+        <div className="scope-grid">
+          <article className="info-card">
+            <h3>Supported properties</h3>
+            <ul>
+              <li>Melting point, reported in degC under atmospheric conditions.</li>
+              <li>Boiling point, reported in degC at 1 atm.</li>
+              <li>Liquid density, reported in g/mL at 25 degC and 1 atm.</li>
+            </ul>
+          </article>
+          <article className="info-card">
+            <h3>Important limits</h3>
+            <ul>
+              <li>Predictions are estimates, not lab measurements.</li>
+              <li>The app prefers an unsupported result over a confident guess.</li>
+              <li>
+                Model quality depends on similarity to the training data and
+                whether the molecule fits the stated chemistry scope.
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
     </div>
   );
 }
