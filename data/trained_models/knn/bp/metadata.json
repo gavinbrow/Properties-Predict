@@ -1,0 +1,27 @@
+{
+  "engine": "knn",
+  "property": "bp",
+  "version": "knn::faf01966a0268692",
+  "created_at": "2026-04-26T04:17:09+00:00",
+  "unit": "degC",
+  "fingerprint": {
+    "type": "morgan",
+    "radius": 2,
+    "n_bits": 2048
+  },
+  "k": 5,
+  "shortcircuit_similarity": 0.999,
+  "data_artifact": "data.npz",
+  "n_entries": 5318,
+  "split_counts": {
+    "test": 507,
+    "train": 4312,
+    "val": 499
+  },
+  "value_stats": {
+    "min": -127.9000015258789,
+    "max": 630.5999755859375,
+    "mean": 210.79258728027344
+  },
+  "source_parquet": "C:\\Projects\\Websites\\Properties Predict\\GNN\\data\\processed\\bp_splits.parquet"
+}

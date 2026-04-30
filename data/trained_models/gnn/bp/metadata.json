@@ -1,0 +1,105 @@
+{
+  "engine": "gnn",
+  "property": "bp",
+  "head_index": 1,
+  "version": "gine::ad85a26fca2a",
+  "created_at": "2026-04-29T00:58:22+00:00",
+  "architecture": "gine",
+  "hidden_dim": 416,
+  "num_layers": 8,
+  "dropout": 0.08,
+  "attentivefp_timesteps": 3,
+  "use_global_features": true,
+  "global_feature_dim": 43,
+  "descriptor_hidden_dim": 288,
+  "fusion_hidden_dim": 416,
+  "pooling": "attention",
+  "descriptor_residual_mode": "bp",
+  "descriptor_residual_hidden_dim": 288,
+  "max_logvar": 6.0,
+  "min_logvar": -8.0,
+  "feature_version": "phase15_graphs_v7",
+  "atom_feature_dim": 47,
+  "bond_feature_dim": 14,
+  "target_scaler": {
+    "mean": 177.07181566083852,
+    "std": 89.24553615037962
+  },
+  "checkpoints": [
+    "../shared/bp/seed_7/best.pt",
+    "../shared/bp/seed_17/best.pt",
+    "../shared/bp/seed_29/best.pt",
+    "../shared/bp/seed_41/best.pt",
+    "../shared/bp/seed_53/best.pt"
+  ],
+  "checkpoint_sha256": [
+    {
+      "seed": 7,
+      "sha256": "24e0d93e314a235a0c8444424c20c56f73ee8d52ceab74e7a21eaa5380fb61d8"
+    },
+    {
+      "seed": 17,
+      "sha256": "68a9f7a4c6e313d556f4bdc8efd00ddea04d4e17894cabda57085789d186c867"
+    },
+    {
+      "seed": 29,
+      "sha256": "3c54338a583f48cb510eb456b3731b4906014de698aabc003d65243bd2a4138e"
+    },
+    {
+      "seed": 41,
+      "sha256": "a1f1482f3694de11f75dca4715feae466afb681b531c647f409430560b24712b"
+    },
+    {
+      "seed": 53,
+      "sha256": "e29deea411a617be3111f0167dc6b9e5a0d5ccbabff93e099269be52da736e05"
+    }
+  ],
+  "training_fingerprints": "../shared/training_fingerprints.npz",
+  "training_fingerprints_fpsize": 2048,
+  "training_fingerprints_radius": 2,
+  "calibration": {
+    "temperature": 0.6117115775142798,
+    "ood_threshold": 0.3,
+    "low_confidence_sigma_degc": 54.77507770357864,
+    "status_threshold_method": "expected_error_threshold",
+    "confidence_mode": "expected_error_threshold",
+    "expected_error_model_artifact": "../shared/calibration/bp_expected_error_model.pkl",
+    "expected_error_threshold_c": 29.7053210768954,
+    "ok_probability_threshold": 0.65625,
+    "ok_error_threshold_c": 30.0,
+    "interval80_status_threshold_c": 120.0,
+    "display_interval_level": 0.8,
+    "interval_mean_half_width": {
+      "0.5": 25.589928527636708,
+      "0.8": 51.30246791070416,
+      "0.9": 75.53265024381717
+    },
+    "interval_coverage": {
+      "0.5": 0.5201680672268908,
+      "0.8": 0.8109243697478992,
+      "0.9": 0.9092436974789916
+    },
+    "uncertainty_mode": "calibrated_interval80_half_width"
+  },
+  "low_confidence_sigma_degc": 54.77507770357864,
+  "status_threshold_method": "expected_error_threshold",
+  "uncertainty_mode": "calibrated_interval80_half_width",
+  "confidence_mode": "expected_error_threshold",
+  "expected_error_threshold_c": 29.7053210768954,
+  "interval80_status_threshold_c": 120.0,
+  "display_interval_level": 0.8,
+  "ok_probability_threshold": 0.65625,
+  "ok_error_threshold_c": 30.0,
+  "expected_error_model_artifact": "../shared/calibration/bp_expected_error_model.pkl",
+  "teacher_sources": [
+    "opera"
+  ],
+  "legacy_head_layout": false,
+  "shared_trunk_hidden_dim": 512,
+  "shared_trunk_layers": 3,
+  "use_fingerprint_features": false,
+  "fingerprint_feature_dim": 2048,
+  "fingerprint_hidden_dim": 256,
+  "target_expert_hidden_dim": 448,
+  "target_expert_layers": 3
+}

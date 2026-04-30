@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Logs (runtime-generated, never checked in)
+logs/
+*.log
+*.err.log
+*.har
+
+# Local env / secrets
+.env
+.env.local
+*.local
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Frontend build / deps
+frontend/node_modules/
+frontend/.vite/
+frontend/test-results/
+frontend/playwright-report/
+frontend/.eslintcache
+
+# Misc
+*.png
