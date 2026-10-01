@@ -30,7 +30,7 @@ const TIER_LABELS: Record<ConfidenceTier, string> = {
 const METHOD_LABELS: Record<Method, string> = {
   lookup: "Reference lookup",
   knn: "kNN match",
-  gnn: "Custom GNN",
+  gnn: "Neural ensemble",
   thermo: "Thermo",
   consensus: "Consensus",
   none: "No result",
@@ -39,7 +39,7 @@ const METHOD_LABELS: Record<Method, string> = {
 const ENGINE_LABELS: Record<string, string> = {
   lookup: "Reference lookup",
   knn: "kNN match",
-  gnn: "Custom GNN",
+  gnn: "Neural ensemble",
   thermo: "Thermo",
 };
 

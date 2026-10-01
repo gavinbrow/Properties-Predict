@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
 
-    gnn_models_root: Path = Field(default=DATA_ROOT / "trained_models" / "gnn")
+    gnn_models_root: Path = Field(default=DATA_ROOT / "trained_models" / "gnn_v14")
     knn_models_root: Path = Field(default=DATA_ROOT / "trained_models" / "knn")
     database_url: str = f"sqlite:///{DATA_ROOT / 'lookup' / 'compounds.db'}"
 

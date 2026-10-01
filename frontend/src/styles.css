@@ -1147,3 +1147,10 @@ button:disabled {
     padding: 10px 12px;
   }
 }
+
+.engine-model-summary {
+  color: var(--text-muted, #9ca3af);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 0;
+}

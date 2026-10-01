@@ -188,6 +188,9 @@ def create_app() -> Flask:
                 "knn_artifact_digest": _artifact_digest(registry, "knn"),
                 "gnn": _engine_version(registry, "gnn"),
                 "gnn_checkpoint_digest": _artifact_digest(registry, "gnn"),
+                "gnn_dataset_manifest_digest": getattr(
+                    registry.get("gnn"), "dataset_manifest_digest", lambda: None
+                )(),
                 "thermo": _engine_version(registry, "thermo"),
             }
         )
@@ -315,6 +318,10 @@ def _warm_models(registry: EngineRegistry) -> None:
             continue
         for prop in props:
             result = engine.predict(molecule, prop)
+            if getattr(result.status, "value", str(result.status)) in {
+                "engine_error", "not_configured", "parse_error", "timeout",
+            }:
+                raise RuntimeError(f"startup inference failed for {engine_name}/{prop}: {result.warnings}")
             logger.info(
                 "warmed engine=%s prop=%s status=%s",
                 engine_name,
@@ -467,6 +474,7 @@ def main() -> None:
     registry = get_registry()
     _assert_ready(registry)
     _warm_models(registry)
+    _assert_ready(registry)
 
     settings = get_settings()
     host = os.getenv("PROD_HOST") or settings.host

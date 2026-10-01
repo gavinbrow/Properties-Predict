@@ -97,6 +97,14 @@ export interface EngineInfo {
   ready?: boolean;
   ready_for?: string[];
   issues?: string[];
+  properties?: Record<string, {
+    ready: boolean;
+    model_version?: string;
+    model_label?: string;
+    members?: number;
+    uncertainty_mode?: string;
+    issues?: string[];
+  }>;
 }
 
 export interface EnginesInfo {
@@ -107,10 +115,13 @@ export interface EnginesInfo {
 export interface VersionInfo {
   backend: string;
   rdkit: string;
+  knn: string;
+  knn_artifact_digest: string | null;
   gnn: string;
   gnn_checkpoint_digest: string | null;
   gnn_dataset_manifest_digest: string | null;
   thermo: string;
-  fastapi: string;
+  flask: string;
+  waitress: string;
   pydantic: string;
 }

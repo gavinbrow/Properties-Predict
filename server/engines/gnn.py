@@ -1222,9 +1222,13 @@ class GnnEngine(BaseEngine):
         settings = get_settings()
         configured = Path(models_root) if models_root else Path(settings.gnn_models_root)
         self._root = configured
+        self._blend = None
+        if (configured / "release.json").is_file():
+            from server.engines.neural_blend import NeuralBlendEngine
+            self._blend = NeuralBlendEngine(configured)
         self._models: dict[str, _Model] = {}
         self._model_lock = Lock()
-        self.version = self._discover_version()
+        self.version = self._blend.version if self._blend else self._discover_version()
 
     def _discover_version(self) -> str:
         # User-facing version label. The framework versions (torch/pyg) and
@@ -1286,6 +1290,8 @@ class GnnEngine(BaseEngine):
         }
 
     def status(self) -> dict:
+        if self._blend is not None:
+            return self._blend.status()
         properties = {prop: self._inspect_property(prop) for prop in sorted(SUPPORTED_PROPS)}
         ready_for = [prop for prop, info in properties.items() if info["ready"]]
         issues: list[str] = []
@@ -1300,6 +1306,8 @@ class GnnEngine(BaseEngine):
         }
 
     def artifact_digest(self) -> str | None:
+        if self._blend is not None:
+            return self._blend.artifact_digest()
         h = hashlib.sha256()
         found = False
         for prop in sorted(SUPPORTED_PROPS):
@@ -1316,6 +1324,9 @@ class GnnEngine(BaseEngine):
                     h.update(f"{prop}:{entry.get('seed')}:{sha}".encode())
                     found = True
         return h.hexdigest()[:12] if found else None
+
+    def dataset_manifest_digest(self) -> str | None:
+        return self._blend.dataset_manifest_digest() if self._blend is not None else None
 
     def _get_model(self, prop: str) -> _Model | None:
         with self._model_lock:
@@ -1337,6 +1348,8 @@ class GnnEngine(BaseEngine):
         return self.predict_batch([molecule], prop)[0]
 
     def predict_batch(self, molecules: list[NormalizedMolecule], prop: str) -> list[EngineResult]:
+        if self._blend is not None:
+            return self._blend.predict_batch(molecules, prop)
         if not self.supports(prop):
             return [
                 error_result(

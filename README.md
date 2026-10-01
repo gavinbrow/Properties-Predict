@@ -12,7 +12,8 @@ can be cloned to a server and run with no other repos.
 ├── server/                 # Internal Python package (engines, schemas, services, lookup)
 ├── data/
 │   ├── trained_models/
-│   │   ├── gnn/            # v7 GNN ensembles (BP distill, MP specialist) + calibration
+│   │   ├── gnn/            # Preserved Gen 7 models (optional explicit override)
+│   │   ├── gnn_v14/        # Locked Gen 14 blend, nine models per property
 │   │   └── knn/            # kNN BP/MP fingerprint stores
 │   └── lookup/compounds.db # SQLite lookup DB
 ├── frontend/
@@ -49,8 +50,9 @@ the API and the prebuilt UI from `frontend/dist/`.
 `app.py` validates that all three engines are ready before serving traffic
 and warms the kNN + GNN artifacts in-process:
 
-- `gnn` — v7 ensemble (5 seeds), BP distill + MP specialist, with calibrated
-  uncertainty
+- `gnn` — Gen 14 locked blend, nine neural models per property. In-domain
+  estimates carry low confidence and null uncertainty until blend calibration is
+  established; out-of-domain estimates emit no value.
 - `knn` — Tanimoto kNN over Morgan fingerprints (BP + MP)
 - `thermo` — Joback + COSTALD/Rackett offline density estimator
 
@@ -87,3 +89,33 @@ Vite copies `frontend/public/favicon.ico` and `frontend/index.html` into
 - `GET  /version`        — engine versions + artifact digests
 - `GET  /health`         — readiness check
 - `GET  /`               — frontend SPA
+
+## Updating to Gen 14
+
+Stop the service, pull `main`, install the updated requirements, and restart:
+
+```powershell
+git pull --ff-only origin main
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python app.py
+```
+
+Use Python 3.10–3.12. All model files and frozen inference sources are bundled;
+no research checkout is needed. If `GNN_MODELS_ROOT` in the environment or `.env`
+points to the old `gnn` directory, remove that override or change it to
+`data/trained_models/gnn_v14`. Confirm `/version` reports `gnn: v14.0` and
+`/health` is ready after restart. CPU inference defaults to four threads;
+`GNN_CPU_THREADS` can adjust it.
+
+MP uses 0.28 GINE + 0.22 MAE-only GINE + 0.50 descriptor Chemprop; BP uses
+0.18 GINE + 0.28 plain Chemprop + 0.54 descriptor Chemprop. Each constituent
+averages seeds 7, 17 and 29 equally. The selection lock and every model hash
+are recorded in `data/trained_models/gnn_v14/release.json`; files are verified
+before loading. Structure-only cached descriptors preserve the exact established
+training features, and new structures use the same frozen feature code.
+
+Saved internal historical-holdout MAE: MP 26.640 °C, BP 28.759 °C. These are
+not independent external validation. kNN and exact reference lookups can still
+short-circuit the neural engine; disable kNN to inspect neural predictions.
+Density remains the thermo estimator.

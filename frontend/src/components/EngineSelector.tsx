@@ -78,6 +78,13 @@ export function EngineSelector({
           );
         })}
       </div>
+      {engines.filter((engine) => engine.name === "gnn").map((engine) => (
+        <p className="engine-model-summary" key={engine.name}>
+          {Object.entries(engine.properties ?? {}).filter(([, model]) => model.model_label)
+            .map(([prop, model]) => `${propertyLabel(prop)}: ${model.model_label}${model.members ? ` (${model.members} models)` : ""}`)
+            .join(" · ")}
+        </p>
+      ))}
     </section>
   );
 }

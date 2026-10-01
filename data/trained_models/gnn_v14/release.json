@@ -1,0 +1,185 @@
+{
+  "artifacts": {
+    "bp/chemprop_desc/seed_17.pt": "07589c5f417690eb675672e3eea2aa5145949c9f899d0ca57fca675da9490c7a",
+    "bp/chemprop_desc/seed_29.pt": "079d29c4ddca416a821be22ee677d3e5975f2e06701b81cca7b7f18140c51cf1",
+    "bp/chemprop_desc/seed_7.pt": "80c46cab2514ea308139bb57469a93e152af5edcc0912526d0fab940f688a282",
+    "bp/chemprop_plain/seed_17.pt": "5238153b336a3c2f9d57e6072a5e597600ce09c14b88ac34c0ad021b8310bd2b",
+    "bp/chemprop_plain/seed_29.pt": "d8ef6a0d600631adb748435661bd69b8f775b4c280a8f19645389ecb88ca8435",
+    "bp/chemprop_plain/seed_7.pt": "0f25b33a22aad9d8056ea82f223836e77da9b93bf7c0421d8503be220a8c90ae",
+    "bp/gine/seed_17.pt": "20415bd78d8aa8c661e096bfe5834636d6c789f215fc0003e676dca3fe416dfb",
+    "bp/gine/seed_29.pt": "79f727b10b1ac26c35573a9fc0a2100625060dfc68b8a064d9aefe80158cf314",
+    "bp/gine/seed_7.pt": "914c8059309db82230b094d9a7ff6c92f88838990c47585c75a6a75a0c9f265f",
+    "feature_reference.npz": "36312164d32c7427041f3806fd972e12a92a968ee0ccb9642b0c14044b687fa6",
+    "mp/chemprop_desc/seed_17.pt": "5ce083fc33b5d9d61659f74cc6fb1063e2c3da3683882084b27d2db61e162b90",
+    "mp/chemprop_desc/seed_29.pt": "0a7e9c04edf803633082634a55e7cbdacb60ab0ff2a6600a7a6384075cdc767d",
+    "mp/chemprop_desc/seed_7.pt": "92ce100517c4e519995e3c92448a9e0b294868341f74b1d683c400c3bec201f5",
+    "mp/gine/seed_17.pt": "15234b75de7430f9d4272fca97843a855c16b250bc8c548b41d0a1c604122b0e",
+    "mp/gine/seed_29.pt": "2295b1e78e5c49abaa7b24a6f0bde626dd3bd02a4d9e2c8c1c86062b1c002989",
+    "mp/gine/seed_7.pt": "32e5d5f7db0f8cce90a1189597b1ee86722198f3f566abcfe4c94903a895c019",
+    "mp/gine_mae/seed_17.pt": "74b72c584ef662598e5e1e981626e2d8a659228efefbe14325cfbea3c0decba4",
+    "mp/gine_mae/seed_29.pt": "d4830f120b2aac3e5655ad3ab8d683a023e119195f690b9624600c6c931f51a0",
+    "mp/gine_mae/seed_7.pt": "d3ab1afae7803de126e6a92bdff9a404f09d12e55346c1c5a44604288f5cd156",
+    "training_fingerprints.npz": "f83056d82925e62f525ed65cb129385647c570e6340ed898318a4722e81720cb"
+  },
+  "descriptor_names": [
+    "mw",
+    "heavy_atom_count",
+    "num_rotatable_bonds",
+    "tpsa",
+    "logp",
+    "num_h_acceptors",
+    "num_h_donors",
+    "num_aromatic_rings",
+    "fraction_csp3",
+    "ring_count",
+    "hetero_count",
+    "num_aliphatic_rings",
+    "num_saturated_rings",
+    "num_bridgehead_atoms",
+    "num_spiro_atoms",
+    "num_heterocycles",
+    "mol_mr",
+    "labute_asa",
+    "bertz_ct",
+    "ring_system_count",
+    "largest_ring_system_size",
+    "fused_ring_count",
+    "murcko_scaffold_atoms",
+    "murcko_scaffold_fraction",
+    "topological_diameter",
+    "carbonyl_count",
+    "hydroxyl_count",
+    "carboxylic_acid_count",
+    "aromatic_atom_fraction",
+    "conformer_success",
+    "radius_of_gyration",
+    "asphericity",
+    "eccentricity",
+    "inertial_shape_factor",
+    "npr1",
+    "npr2",
+    "pbf",
+    "pmi1",
+    "pmi2",
+    "pmi3",
+    "spherocity_index"
+  ],
+  "evaluation": "internal historical v11 holdout",
+  "feature_version": "phase15_graphs_v7",
+  "features_path": "feature_reference.npz",
+  "fingerprints_path": "training_fingerprints.npz",
+  "ood_threshold": 0.3,
+  "selection_lock_sha256": "eaf54c57e84474834afdac11028e6d625946758940295847f521603be993e0fd",
+  "source_sha256": {
+    "model.py": "fdc27fad2a2102f81d5c13e3913be2a0d7ad70c5450aeb7bd694a66744f481f4",
+    "molecular_features.py": "bf9e2e4fb2555325142fca538245fae66d47b9e0061e2e3e3cc08539107cc60b"
+  },
+  "split_manifest_sha256": "1ec4557cc465d2963e2b6e61f3680039c198773fe01e086c4ebe2d423679f18c",
+  "stage": "v14-final",
+  "targets": {
+    "bp": {
+      "recipes": {
+        "chemprop_desc": [
+          {
+            "path": "bp/chemprop_desc/seed_7.pt",
+            "seed": 7
+          },
+          {
+            "path": "bp/chemprop_desc/seed_17.pt",
+            "seed": 17
+          },
+          {
+            "path": "bp/chemprop_desc/seed_29.pt",
+            "seed": 29
+          }
+        ],
+        "chemprop_plain": [
+          {
+            "path": "bp/chemprop_plain/seed_7.pt",
+            "seed": 7
+          },
+          {
+            "path": "bp/chemprop_plain/seed_17.pt",
+            "seed": 17
+          },
+          {
+            "path": "bp/chemprop_plain/seed_29.pt",
+            "seed": 29
+          }
+        ],
+        "gine": [
+          {
+            "path": "bp/gine/seed_7.pt",
+            "seed": 7
+          },
+          {
+            "path": "bp/gine/seed_17.pt",
+            "seed": 17
+          },
+          {
+            "path": "bp/gine/seed_29.pt",
+            "seed": 29
+          }
+        ]
+      },
+      "weights": {
+        "chemprop_desc": 0.54,
+        "chemprop_plain": 0.28,
+        "gine": 0.18
+      }
+    },
+    "mp": {
+      "recipes": {
+        "chemprop_desc": [
+          {
+            "path": "mp/chemprop_desc/seed_7.pt",
+            "seed": 7
+          },
+          {
+            "path": "mp/chemprop_desc/seed_17.pt",
+            "seed": 17
+          },
+          {
+            "path": "mp/chemprop_desc/seed_29.pt",
+            "seed": 29
+          }
+        ],
+        "gine": [
+          {
+            "path": "mp/gine/seed_7.pt",
+            "seed": 7
+          },
+          {
+            "path": "mp/gine/seed_17.pt",
+            "seed": 17
+          },
+          {
+            "path": "mp/gine/seed_29.pt",
+            "seed": 29
+          }
+        ],
+        "gine_mae": [
+          {
+            "path": "mp/gine_mae/seed_7.pt",
+            "seed": 7
+          },
+          {
+            "path": "mp/gine_mae/seed_17.pt",
+            "seed": 17
+          },
+          {
+            "path": "mp/gine_mae/seed_29.pt",
+            "seed": 29
+          }
+        ]
+      },
+      "weights": {
+        "chemprop_desc": 0.5,
+        "gine": 0.28,
+        "gine_mae": 0.22
+      }
+    }
+  },
+  "uncertainty_mode": "uncalibrated",
+  "version": "v14.0"
+}

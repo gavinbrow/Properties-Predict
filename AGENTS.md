@@ -57,3 +57,16 @@ Production deployment bundle, NOT legacy. It is a deployable re-packaging of the
 - Prod's engine set is a subset of dev's: no `opera.py`, no `chemprop.py` in `Prod/server/engines/`. If a fix touches those engines, it belongs in the dev `backend/`, not here.
 - `app.py` hard-fails at boot (`_assert_ready`) if any of knn/gnn/thermo is not ready, so a missing or corrupt `data/trained_models/*` artifact will stop the server from starting rather than degrade silently.
 - Do not edit anything here unless you know why — this is the production deployable. Changes should flow from the dev backend with deliberate re-packaging, not ad-hoc edits inside `Prod/`.
+
+## Gen 14 release (2026-10-01)
+
+The default is now `data/trained_models/gnn_v14/`, served by
+`server/engines/neural_blend.py` behind `GnnEngine`. Frozen research source copies
+are in `server/engines/neural/`; their hashes, all selected checkpoints, the
+structure-only feature reference and train-only domain fingerprints are bound
+to `release.json`. `requirements.txt` now includes Chemprop 2.2.1. The Gen 7
+notes above describe the preserved old model root. Never apply its uncertainty
+calibration to the new blend: in-domain estimates are low confidence with null
+uncertainty, and out-of-domain estimates have no value. See README for server
+update instructions. Run `python -m unittest discover -s tests -v` and rebuild
+`frontend/dist/` with `npm run build` after frontend edits.

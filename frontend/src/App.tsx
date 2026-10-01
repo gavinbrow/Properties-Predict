@@ -450,13 +450,14 @@ function HowItWorks() {
             </p>
           </article>
           <article className="info-card info-card-accent">
-            <h3>GNN ensemble</h3>
+            <h3>Neural ensemble</h3>
             <p>
-              The GNN engine represents the molecule as a graph with atom, bond,
-              global descriptor, fingerprint, and shape features. Multiple v7
-              model checkpoints vote as an ensemble. The engine reports a value,
-              uncertainty, similarity to the training set, and calibrated error
-              checks that can mark a prediction low confidence or out of domain.
+              The neural engine combines graph networks and molecular descriptors
+              to estimate melting and boiling points. The loaded version appears
+              in the engine selector. Gen 14 uses nine saved neural models per
+              property, with blend weights fixed during validation. Similarity
+              checks can mark a structure out of domain. Until the blend has its
+              own uncertainty calibration, its estimates carry low confidence.
             </p>
           </article>
           <article className="info-card info-card-accent">
